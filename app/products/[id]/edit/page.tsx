@@ -266,16 +266,16 @@ export default function EditProductPage() {
 
             {/* Image upload */}
             <FormField label="تصویر اصلی">
-              <Controller
-                name="nameFa"
-                control={control}
-                render={() => (
-                  <ImageUpload
-                    value={product?.images?.[0]}
-                    endpoint="/api/media/upload"
-                    onChange={() => {}}
-                  />
-                )}
+              <ImageUpload
+                value={product?.images?.[0]}
+                endpoint="/api/media/upload"
+                onChange={(url) => {
+                  // Update the product's first image
+                  if (product) {
+                    const newImages = url ? [url, ...(product.images?.slice(1) || [])] : [];
+                    updateMutation.mutate({ images: newImages } as any);
+                  }
+                }}
               />
             </FormField>
 
