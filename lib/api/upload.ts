@@ -4,12 +4,16 @@ export async function uploadFile(
   fieldName = "file"
 ): Promise<{ url: string }> {
   const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+  const token = typeof window !== "undefined" ? localStorage.getItem("auth-token") : null;
   const formData = new FormData();
   formData.append(fieldName, file);
 
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     method: "POST",
     credentials: "include",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: formData,
     // Do NOT set Content-Type — browser sets it automatically with boundary
   });
