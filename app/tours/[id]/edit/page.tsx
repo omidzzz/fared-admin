@@ -23,9 +23,17 @@ const schema = z.object({
   titleFa: z.string().min(2, "نام فارسی الزامی است"),
   titleEn: z.string().optional().default(""),
   descriptionFa: z.string().optional().default(""),
+  descriptionEn: z.string().optional().default(""),
   price: z.coerce.number().min(0),
+  destination: z.string().optional().default(""),
+  dateRange: z.string().optional().default(""),
+  startDate: z.string().optional().default(""),
+  endDate: z.string().optional().default(""),
+  durationDays: z.coerce.number().min(0).optional().default(0),
   duration: z.string().optional().default(""),
   maxCapacity: z.coerce.number().min(0).optional().default(0),
+  spotsLeft: z.coerce.number().min(0).optional().default(0),
+  instructor: z.string().optional().default(""),
   featured: z.boolean().optional().default(false),
   active: z.boolean().optional().default(true),
 });
@@ -43,7 +51,42 @@ export default function EditTourPage() {
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    values: tour ? { titleFa: tour.titleFa, titleEn: tour.titleEn, descriptionFa: tour.descriptionFa, price: tour.price, duration: tour.duration, maxCapacity: tour.maxCapacity, featured: false, active: tour.active } : undefined,
+    defaultValues: {
+      titleFa: "",
+      titleEn: "",
+      descriptionFa: "",
+      descriptionEn: "",
+      price: 0,
+      destination: "",
+      dateRange: "",
+      startDate: "",
+      endDate: "",
+      durationDays: 0,
+      duration: "",
+      maxCapacity: 0,
+      spotsLeft: 0,
+      instructor: "",
+      featured: false,
+      active: true,
+    },
+    values: tour ? {
+      titleFa: tour.titleFa,
+      titleEn: tour.titleEn,
+      descriptionFa: tour.descriptionFa,
+      descriptionEn: tour.descriptionEn ?? "",
+      price: tour.price,
+      destination: tour.destination ?? "",
+      dateRange: tour.dateRange ?? "",
+      startDate: tour.startDate ?? "",
+      endDate: tour.endDate ?? "",
+      durationDays: tour.durationDays ?? 0,
+      duration: tour.duration ?? "",
+      maxCapacity: tour.maxCapacity,
+      spotsLeft: tour.spotsLeft ?? 0,
+      instructor: tour.instructor ?? "",
+      featured: tour.featured ?? false,
+      active: tour.active,
+    } : undefined,
   });
 
   const updateMutation = useMutation({
@@ -72,9 +115,27 @@ export default function EditTourPage() {
               <FormField label="قیمت (تومان)" required error={errors.price?.message}><Input type="number" {...register("price")} /></FormField>
               <FormField label="مدت" error={errors.duration?.message}><Input placeholder="مثال: ۳ روز" {...register("duration")} /></FormField>
             </div>
+            <FormField label="مقصد"><Input placeholder="مقصد تور" {...register("destination")} /></FormField>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField label="تاریخ شروع"><Input type="date" {...register("startDate")} /></FormField>
+              <FormField label="تاریخ پایان"><Input type="date" {...register("endDate")} /></FormField>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField label="مدت (روز)"><Input type="number" {...register("durationDays")} /></FormField>
+              <FormField label="ظرفیت باقی‌مانده"><Input type="number" {...register("spotsLeft")} /></FormField>
+            </div>
+
+            <FormField label="نام مدرس/راهنما"><Input placeholder="نام راهنما" {...register("instructor")} /></FormField>
+
             <FormField label="حداکثر ظرفیت"><Input type="number" {...register("maxCapacity")} /></FormField>
-            <FormField label="توضیحات"><textarea rows={4} className="form-input" placeholder="توضیحات تور..." {...register("descriptionFa")} /></FormField>
+
+            <FormField label="توضیحات فارسی"><textarea rows={4} className="form-input" placeholder="توضیحات تور..." {...register("descriptionFa")} /></FormField>
+            <FormField label="توضیحات انگلیسی"><textarea rows={4} className="form-input" placeholder="Tour description..." {...register("descriptionEn")} /></FormField>
+
             <FormField label="تصویر"><ImageUpload value={tour?.image} endpoint="/api/media/upload" onChange={() => {}} /></FormField>
+
             <div className="flex items-center gap-8">
               <Controller name="featured" control={control} render={({ field }) => <Toggle checked={field.value} onChange={field.onChange} label="ویژه" />} />
               <Controller name="active" control={control} render={({ field }) => <Toggle checked={field.value} onChange={field.onChange} label="فعال" />} />

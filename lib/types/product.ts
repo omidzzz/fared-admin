@@ -21,7 +21,10 @@ export interface Product {
   descriptionEn: string;
   descriptionFa: string;
   featured: boolean;
+  isBestSeller: boolean;
   active: boolean;
+  tagsFA: string[];
+  tagsEN: string[];
   createdAt: string;
   updatedAt: string;
 }

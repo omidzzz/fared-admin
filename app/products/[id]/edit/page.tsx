@@ -29,6 +29,7 @@ const productSchema = z.object({
   nameFa: z.string().min(2, "نام فارسی الزامی است"),
   nameEn: z.string().optional().default(""),
   price: z.coerce.number().min(0, "قیمت نمی‌تواند منفی باشد"),
+  comparePrice: z.coerce.number().min(0).optional().default(0),
   stock: z.coerce.number().min(0).optional().default(0),
   category: z.enum([
     "stones",
@@ -41,7 +42,10 @@ const productSchema = z.object({
   descriptionFa: z.string().optional().default(""),
   descriptionEn: z.string().optional().default(""),
   featured: z.boolean().optional().default(false),
+  isBestSeller: z.boolean().optional().default(false),
   active: z.boolean().optional().default(true),
+  tagsFA: z.string().optional().default(""),
+  tagsEN: z.string().optional().default(""),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -78,24 +82,32 @@ export default function EditProductPage() {
       nameFa: "",
       nameEn: "",
       price: 0,
+      comparePrice: 0,
       stock: 0,
       category: "stones",
       descriptionFa: "",
       descriptionEn: "",
       featured: false,
+      isBestSeller: false,
       active: true,
+      tagsFA: "",
+      tagsEN: "",
     },
     values: product
       ? {
           nameFa: product.nameFa,
           nameEn: product.nameEn,
           price: product.price,
+          comparePrice: product.comparePrice ?? 0,
           stock: product.stock,
           category: product.category as ProductFormData["category"],
           descriptionFa: product.descriptionFa,
           descriptionEn: product.descriptionEn,
           featured: product.featured,
+          isBestSeller: product.isBestSeller,
           active: product.active,
+          tagsFA: Array.isArray(product.tagsFA) ? product.tagsFA.join(", ") : (product.tagsFA ?? ""),
+          tagsEN: Array.isArray(product.tagsEN) ? product.tagsEN.join(", ") : (product.tagsEN ?? ""),
         }
       : undefined,
   });
@@ -105,6 +117,8 @@ export default function EditProductPage() {
       updateProduct(id, {
         ...data,
         category: data.category as ProductCategory,
+        tagsFA: data.tagsFA.split(",").map(t => t.trim()).filter(Boolean),
+        tagsEN: data.tagsEN.split(",").map(t => t.trim()).filter(Boolean),
       } as Partial<import("@/lib/types").Product> & { category: ProductCategory }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -211,14 +225,24 @@ export default function EditProductPage() {
               </FormField>
             </div>
 
-            {/* Stock */}
-            <FormField label="موجودی" error={errors.stock?.message}>
-              <Input
-                type="number"
-                placeholder="تعداد موجودی"
-                {...register("stock")}
-              />
-            </FormField>
+            {/* Compare Price + Stock row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField label="قیمت مقایسه‌ای (تومان)" error={errors.comparePrice?.message}>
+                <Input
+                  type="number"
+                  placeholder="قیمت قبل از تخفیف"
+                  {...register("comparePrice")}
+                />
+              </FormField>
+
+              <FormField label="موجودی" error={errors.stock?.message}>
+                <Input
+                  type="number"
+                  placeholder="تعداد موجودی"
+                  {...register("stock")}
+                />
+              </FormField>
+            </div>
 
             {/* Description FA */}
             <FormField label="توضیحات فارسی">
@@ -255,7 +279,7 @@ export default function EditProductPage() {
               />
             </FormField>
 
-            {/* Featured + Active toggles */}
+            {/* Featured + Best Seller + Active toggles */}
             <div className="flex items-center gap-8">
               <Controller
                 name="featured"
@@ -265,6 +289,17 @@ export default function EditProductPage() {
                     checked={field.value}
                     onChange={field.onChange}
                     label="محصول ویژه"
+                  />
+                )}
+              />
+              <Controller
+                name="isBestSeller"
+                control={control}
+                render={({ field }) => (
+                  <Toggle
+                    checked={field.value}
+                    onChange={field.onChange}
+                    label="پرفروش"
                   />
                 )}
               />
@@ -279,6 +314,22 @@ export default function EditProductPage() {
                   />
                 )}
               />
+            </div>
+
+            {/* Tags */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField label="تگ‌های فارسی (جدا شده با ویرگول)" error={errors.tagsFA?.message}>
+                <Input
+                  placeholder="مثال: سنگی، تزئینی، دست‌ساز"
+                  {...register("tagsFA")}
+                />
+              </FormField>
+              <FormField label="تگ‌های انگلیسی (جدا شده با ویرگول)" error={errors.tagsEN?.message}>
+                <Input
+                  placeholder="Example: stone, decorative, handmade"
+                  {...register("tagsEN")}
+                />
+              </FormField>
             </div>
 
             {/* Submit + Delete */}

@@ -1,10 +1,16 @@
 import { apiClient } from "@/lib/api/client";
-import type { Category } from "@/lib/types";
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  productCount?: number;
+}
 
 export async function getCategories(): Promise<Category[]> {
   try {
     const response = await apiClient.get("/categories");
-    return response.data;
+    return (response as { data: Category[] }).data;
   } catch (error) {
     console.error("Error fetching categories:", error);
     throw error;
@@ -14,7 +20,7 @@ export async function getCategories(): Promise<Category[]> {
 export async function getCategory(id: string): Promise<Category> {
   try {
     const response = await apiClient.get(`/categories/${id}`);
-    return response.data;
+    return (response as { data: Category }).data;
   } catch (error) {
     console.error(`Error fetching category ${id}:`, error);
     throw error;
@@ -26,7 +32,7 @@ export async function createCategory(
 ): Promise<Category> {
   try {
     const response = await apiClient.post("/categories", data);
-    return response.data;
+    return (response as { data: Category }).data;
   } catch (error) {
     console.error("Error creating category:", error);
     throw error;
@@ -39,7 +45,7 @@ export async function updateCategory(
 ): Promise<Category> {
   try {
     const response = await apiClient.put(`/categories/${id}`, data);
-    return response.data;
+    return (response as { data: Category }).data;
   } catch (error) {
     console.error(`Error updating category ${id}:`, error);
     throw error;

@@ -3,11 +3,19 @@ export interface Course {
   titleFa: string;
   titleEn: string;
   descriptionFa: string;
+  descriptionEn: string;
   price: number;
+  duration: string;
+  durationWeeks: number;
+  durationHours: number;
+  lessons: number;
+  level: string;
+  language: string;
+  certificate: boolean;
   instructor: string;
   instructorImage: string;
   image: string;
-  durationHours: number;
+  featured: boolean;
   active: boolean;
   createdAt: string;
 }

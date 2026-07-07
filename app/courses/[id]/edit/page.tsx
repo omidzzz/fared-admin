@@ -23,8 +23,15 @@ const schema = z.object({
   titleFa: z.string().min(2, "عنوان الزامی است"),
   titleEn: z.string().optional().default(""),
   descriptionFa: z.string().optional().default(""),
+  descriptionEn: z.string().optional().default(""),
   price: z.coerce.number().min(0),
+  duration: z.string().optional().default(""),
+  durationWeeks: z.coerce.number().min(0).optional().default(0),
   durationHours: z.coerce.number().min(0).optional().default(0),
+  lessons: z.coerce.number().min(0).optional().default(0),
+  level: z.string().optional().default(""),
+  language: z.string().optional().default(""),
+  certificate: z.boolean().optional().default(false),
   instructor: z.string().optional().default(""),
   featured: z.boolean().optional().default(false),
   active: z.boolean().optional().default(true),
@@ -43,7 +50,40 @@ export default function EditCoursePage() {
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    values: course ? { titleFa: course.titleFa, titleEn: course.titleEn, descriptionFa: course.descriptionFa, price: course.price, durationHours: course.durationHours, instructor: course.instructor, featured: false, active: course.active } : undefined,
+    defaultValues: {
+      titleFa: "",
+      titleEn: "",
+      descriptionFa: "",
+      descriptionEn: "",
+      price: 0,
+      duration: "",
+      durationWeeks: 0,
+      durationHours: 0,
+      lessons: 0,
+      level: "",
+      language: "",
+      certificate: false,
+      instructor: "",
+      featured: false,
+      active: true,
+    },
+    values: course ? {
+      titleFa: course.titleFa,
+      titleEn: course.titleEn,
+      descriptionFa: course.descriptionFa,
+      descriptionEn: course.descriptionEn ?? "",
+      price: course.price,
+      duration: course.duration ?? "",
+      durationWeeks: course.durationWeeks ?? 0,
+      durationHours: course.durationHours ?? 0,
+      lessons: course.lessons ?? 0,
+      level: course.level ?? "",
+      language: course.language ?? "",
+      certificate: course.certificate ?? false,
+      instructor: course.instructor ?? "",
+      featured: course.featured ?? false,
+      active: course.active,
+    } : undefined,
   });
 
   const updateMutation = useMutation({
@@ -73,7 +113,26 @@ export default function EditCoursePage() {
               <FormField label="مدت (ساعت)"><Input type="number" {...register("durationHours")} /></FormField>
             </div>
             <FormField label="نام مدرس"><Input placeholder="نام مدرس" {...register("instructor")} /></FormField>
-            <FormField label="توضیحات"><textarea rows={4} className="form-input" placeholder="توضیحات دوره..." {...register("descriptionFa")} /></FormField>
+
+            {/* Duration fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <FormField label="مدت (متن)" error={errors.duration?.message}><Input placeholder="مثال: 8 weeks" {...register("duration")} /></FormField>
+              <FormField label="مدت (هفته)" error={errors.durationWeeks?.message}><Input type="number" {...register("durationWeeks")} /></FormField>
+              <FormField label="مدت (ساعت)" error={errors.durationHours?.message}><Input type="number" {...register("durationHours")} /></FormField>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField label="تعداد جلسات" error={errors.lessons?.message}><Input type="number" {...register("lessons")} /></FormField>
+              <FormField label="سطح"><Input placeholder="مثال: مقدماتی، متوسط، پیشرفته" {...register("level")} /></FormField>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField label="زبان"><Input placeholder="مثال: فارسی، انگلیسی" {...register("language")} /></FormField>
+              <Controller name="certificate" control={control} render={({ field }) => <Toggle checked={field.value} onChange={field.onChange} label="دارای گواهی" />} />
+            </div>
+
+            <FormField label="توضیحات فارسی"><textarea rows={4} className="form-input" placeholder="توضیحات دوره..." {...register("descriptionFa")} /></FormField>
+            <FormField label="توضیحات انگلیسی"><textarea rows={4} className="form-input" placeholder="Course description..." {...register("descriptionEn")} /></FormField>
             <FormField label="تصویر"><ImageUpload value={course?.image} endpoint="/api/media/upload" onChange={() => {}} /></FormField>
             <div className="flex items-center gap-8">
               <Controller name="featured" control={control} render={({ field }) => <Toggle checked={field.value} onChange={field.onChange} label="ویژه" />} />
