@@ -122,8 +122,32 @@ export default function ProductsPage() {
       label: "موجودی",
     },
     {
+      key: "featured",
+      label: "ویژه",
+      render: (value, row) => (
+        <Toggle
+          checked={value as boolean}
+          onChange={(checked) =>
+            updateMutation.mutate({ id: row.id!, data: { featured: checked } })
+          }
+        />
+      ),
+    },
+    {
+      key: "isBestSeller",
+      label: "پرفروش",
+      render: (value, row) => (
+        <Toggle
+          checked={value as boolean}
+          onChange={(checked) =>
+            updateMutation.mutate({ id: row.id!, data: { isBestSeller: checked } })
+          }
+        />
+      ),
+    },
+    {
       key: "active",
-      label: "وضعیت",
+      label: "فعال",
       render: (value, row) => (
         <Toggle
           checked={value as boolean}

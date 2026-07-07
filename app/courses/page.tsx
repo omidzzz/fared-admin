@@ -45,8 +45,9 @@ export default function CoursesPage() {
     { key: "image", label: "تصویر", render: (v) => v ? <img src={String(v)} alt="" className="w-10 h-10 rounded-lg object-cover" /> : <div className="w-10 h-10 rounded-lg bg-subtle" /> },
     { key: "titleFa", label: "عنوان" },
     { key: "price", label: "قیمت", render: (v) => `${(v as number).toLocaleString("fa-IR")} تومان` },
-    { key: "instructor", label: "مدرس", render: (v) => String(v ?? "—") },
-    { key: "active", label: "وضعیت", render: (v, row) => <Toggle checked={v as boolean} onChange={(c) => toggleMutation.mutate({ id: row.id!, data: { active: c } })} /> },
+    { key: "instructor", label: "مدرس" },
+    { key: "featured", label: "ویژه", render: (v, row) => <Toggle checked={v as boolean} onChange={(c) => toggleMutation.mutate({ id: row.id!, data: { featured: c } })} /> },
+    { key: "active", label: "فعال", render: (v, row) => <Toggle checked={v as boolean} onChange={(c) => toggleMutation.mutate({ id: row.id!, data: { active: c } })} /> },
     { key: "actions", label: "عملیات", render: (_v, row) => (
       <div className="flex items-center gap-1">
         <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); router.push(`/courses/${row.id}/edit`); }}><Pencil size={16} /></Button>
