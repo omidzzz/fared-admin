@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -17,6 +17,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
+  // Not authenticated → redirect (useEffect to avoid render-phase side effects)
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace("/login");
+    }
+  }, [user, isLoading, router]);
+
   // Loading state
   if (isLoading) {
     return (
@@ -26,9 +33,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     );
   }
 
-  // Not authenticated → redirect
+  // Not authenticated → show nothing (redirect happens in useEffect)
   if (!user) {
-    router.replace("/login");
     return null;
   }
 
