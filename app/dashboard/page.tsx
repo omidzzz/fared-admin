@@ -41,16 +41,22 @@ export default function DashboardPage() {
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: getDashboardStats,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: recentOrders, isLoading: ordersLoading } = useQuery({
     queryKey: ["dashboard-recent-orders"],
     queryFn: getRecentOrders,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: recentLeads, isLoading: leadsLoading } = useQuery({
     queryKey: ["dashboard-recent-leads"],
     queryFn: getRecentLeads,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   const formatPrice = (price: number) => {
