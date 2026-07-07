@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Trash2 } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FormField } from "@/components/ui/FormField";
@@ -331,6 +331,44 @@ export default function EditProductPage() {
                 />
               </FormField>
             </div>
+
+            {/* Variants (for clothes) */}
+            {product?.category === "clothes" && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">تنوع‌ها (سایزها)</h3>
+                {product.variants?.map((variant: any) => (
+                  <div key={variant.id} className="flex items-center gap-2">
+                    <Input value={variant.name} readOnly className="flex-1" />
+                    <Input value={variant.value} readOnly className="flex-1" />
+                    <Button type="button" variant="ghost" size="sm" onClick={() => {}}>
+                      <Trash2 size={16} className="text-red-500" />
+                    </Button>
+                  </div>
+                ))}
+                <Button type="button" variant="secondary" size="sm">
+                  افزودن سایز
+                </Button>
+              </div>
+            )}
+
+            {/* Color Options (for clothes) */}
+            {product?.category === "clothes" && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">رنگ‌ها</h3>
+                {product.colorOptions?.map((color: any) => (
+                  <div key={color.id} className="flex items-center gap-2">
+                    <Input value={color.name} readOnly className="flex-1" />
+                    <div className="w-10 h-10 rounded border" style={{ backgroundColor: color.hex }} />
+                    <Button type="button" variant="ghost" size="sm" onClick={() => {}}>
+                      <Trash2 size={16} className="text-red-500" />
+                    </Button>
+                  </div>
+                ))}
+                <Button type="button" variant="secondary" size="sm">
+                  افزودن رنگ
+                </Button>
+              </div>
+            )}
 
             {/* Submit + Delete */}
             <div className="flex items-center justify-between pt-4 border-t border-[var(--border-default)]">

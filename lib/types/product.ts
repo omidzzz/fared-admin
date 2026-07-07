@@ -8,6 +8,20 @@ export type ProductCategory =
   | "courses"
   | "mentorship";
 
+export interface ProductVariant {
+  id: string;
+  name: string;
+  value: string;
+  sortOrder: number;
+}
+
+export interface ProductColorOption {
+  id: string;
+  name: string;
+  hex: string;
+  sortOrder: number;
+}
+
 export interface Product {
   id: string;
   nameEn: string;
@@ -25,6 +39,8 @@ export interface Product {
   active: boolean;
   tagsFA: string[];
   tagsEN: string[];
+  variants?: ProductVariant[];
+  colorOptions?: ProductColorOption[];
   createdAt: string;
   updatedAt: string;
 }

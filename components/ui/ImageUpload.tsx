@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, X, ImageIcon } from "lucide-react";
+import { Upload, X, ImageIcon, Link } from "lucide-react";
 import { uploadFile } from "@/lib/api/upload";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { Toast } from "./Toast";
+import { Input } from "./Input";
+import { Button } from "./Button";
 
 interface ImageUploadProps {
   value?: string;
@@ -22,6 +24,8 @@ export function ImageUpload({
   label = "تصویر",
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +60,15 @@ export function ImageUpload({
     }
   };
 
+  const handleUrlSubmit = () => {
+    if (urlInput.trim()) {
+      onChange(urlInput.trim());
+      setUrlInput("");
+      setShowUrlInput(false);
+      Toast.success("تصویر با موفقیت اضافه شد");
+    }
+  };
+
   const handleRemove = () => {
     onChange("");
   };
@@ -84,21 +97,61 @@ export function ImageUpload({
           </button>
         </div>
       ) : (
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className="w-32 h-32 rounded-xl border-2 border-dashed border-[var(--border-default)] flex flex-col items-center justify-center gap-2 text-[var(--text-muted)] hover:border-brand hover:text-brand transition-colors disabled:opacity-50"
-        >
-          {uploading ? (
-            <LoadingSpinner size="sm" />
+        <div className="space-y-2">
+          {!showUrlInput ? (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="w-32 h-32 rounded-xl border-2 border-dashed border-[var(--border-default)] flex flex-col items-center justify-center gap-2 text-[var(--text-muted)] hover:border-brand hover:text-brand transition-colors disabled:opacity-50"
+            >
+              {uploading ? (
+                <LoadingSpinner size="sm" />
+              ) : (
+                <>
+                  <ImageIcon size={28} />
+                  <Upload size={16} />
+                </>
+              )}
+            </button>
           ) : (
-            <>
-              <ImageIcon size={28} />
-              <Upload size={16} />
-            </>
+            <div className="space-y-2">
+              <Input
+                placeholder="https://example.com/image.jpg"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleUrlSubmit())}
+              />
+              <div className="flex gap-2">
+                <Button type="button" size="sm" onClick={handleUrlSubmit}>
+                  <Link size={14} />
+                  افزودن
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    setShowUrlInput(false);
+                    setUrlInput("");
+                  }}
+                >
+                  لغو
+                </Button>
+              </div>
+            </div>
           )}
-        </button>
+
+          {!showUrlInput && !value && (
+            <button
+              type="button"
+              onClick={() => setShowUrlInput(true)}
+              className="text-sm text-brand hover:underline"
+            >
+              یا افزودن با لینک
+            </button>
+          )}
+        </div>
       )}
 
       <input
