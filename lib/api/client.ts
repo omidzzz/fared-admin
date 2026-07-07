@@ -47,7 +47,6 @@ async function request<T>(
   if (res.status === 401) {
     if (typeof window !== "undefined") {
       localStorage.removeItem("auth-token");
-      window.location.href = "/login";
     }
     throw new ApiError(401, "Unauthorized");
   }
